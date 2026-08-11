@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["project_name", "mitigations"],
+  "additionalProperties": false,
+  "properties": {
+    "project_name": {
+      "type": "string",
+      "description": "项目名称"
+    },
+    "mitigations": {
+      "type": "array",
+      "description": "每个风险点的缓解方案列表，依据GDPR Art.25（设计与默认隐私）与Art.32（处理安全的技术与组织措施）",
+      "items": {
+        "type": "object",
+        "required": ["risk_id", "risk_description", "technical_measures", "organizational_measures", "governance_measures"],
+        "additionalProperties": false,
+        "properties": {
+          "risk_id": {
+            "type": "string",
+            "pattern": "^R[0-9]{3}$",
+            "description": "对应的风险ID"
+          },
+          "risk_description": {
+            "type": "string",
+            "description": "风险描述"
+          },
+          "technical_measures": {
+            "type": "array",
+            "description": "技术措施（Art.32(1)：加密、假名化、访问控制、自动清除等）",
+            "items": {"type": "string"},
+            "minItems": 1
+          },
+          "organizational_measures": {
+            "type": "array",
+            "description": "组织措施（数据处理协议/DPA、DPO审核流程、员工培训、供应商合同条款等）",
+            "items": {"type": "string"},
+            "minItems": 1
+          },
+          "governance_measures": {
+            "type": "array",
+            "description": "治理措施（审计日志、事件响应流程、定期复审、问责记录等）",
+            "items": {"type": "string"},
+            "minItems": 1
+          }
+        }
+      }
+    }
+  }
+}

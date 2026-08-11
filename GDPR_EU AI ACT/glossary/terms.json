@@ -1,0 +1,54 @@
+{
+  "legal_to_engineering": [
+    {
+      "term": "controller / processor（控制者/处理者）",
+      "explanation": "谁定义这个功能/API的处理目的和方式，谁就是controller；只是按照controller指示纯执行基础设施（如云厂商）的是processor。判断标准不是「谁写代码」，是「谁决定为什么处理、怎么处理」。"
+    },
+    {
+      "term": "purpose limitation（目的限制，Art.5(1)(b)）",
+      "explanation": "这张表/这个字段收集时声明的用途是什么，就只能用于那个用途。新功能想复用老数据做无关的事，要重新过一遍合法性基础判断，不能直接挪用。"
+    },
+    {
+      "term": "data minimisation（数据最小化，Art.5(1)(c)）",
+      "explanation": "接口/表单不该「顺手多收集」字段——每个字段都要能说清楚它服务于哪个具体目的，收了但不用的字段本身就是风险点。"
+    },
+    {
+      "term": "storage limitation（存储限制，Art.5(1)(e)）",
+      "explanation": "日志表、埋点数据、备份如果没有设置自动过期/清理机制，留存期限不设上限，这本身就是合规缺口，不是「数据多留几天没关系」。"
+    },
+    {
+      "term": "automated decision-making / profiling（自动化决策/画像，Art.22）",
+      "explanation": "打分系统、推荐系统、A/B测试框架如果按用户特征分组并直接影响业务决策（拒绝/通过/定价），且没有人工复核环节，可能落入Art.22。"
+    },
+    {
+      "term": "DPA（数据处理协议，Art.28）",
+      "explanation": "调用第三方AI/云服务API处理个人数据前，要确认这家供应商是不是只是processor角色，且有没有签订Art.28要求的处理协议条款——不是随便调个API就行。"
+    }
+  ],
+  "engineering_to_legal": [
+    {
+      "term": "日志/埋点（logging & telemetry）",
+      "risk_signal": "如果留存期限没有上限，可能触碰 Art.5(1)(e) 存储限制原则。"
+    },
+    {
+      "term": "A/B测试框架",
+      "risk_signal": "如果按用户特征分组并据此做业务决策，可能落入 Art.22 自动化决策/画像的范畴。"
+    },
+    {
+      "term": "向量检索 / embedding 用户自由文本",
+      "risk_signal": "如果被embedding的文本可能包含健康、政治倾向、宗教信仰等信息，可能触发 Art.9 特殊类别数据处理限制。"
+    },
+    {
+      "term": "调用第三方大模型API（如GPT/DeepSeek）",
+      "risk_signal": "涉及 Art.28 处理者关系判断（对方是controller还是processor、有没有DPA），如果模型提供方在欧盟境外，还涉及 Ch.V 跨境传输机制。"
+    },
+    {
+      "term": "推荐系统/评分模型上线",
+      "risk_signal": "如果是AI Act Annex III列举的高风险场景（如招聘、信贷），需要先过风险分级判断，可能触发Art.9-19一整套义务，不只是模型本身的准确率问题。"
+    },
+    {
+      "term": "用户行为持续监控/画像看板",
+      "risk_signal": "可能命中 WP248 DPIA九因素里的「系统性监控」，累计触发DPIA强制门槛。"
+    }
+  ]
+}

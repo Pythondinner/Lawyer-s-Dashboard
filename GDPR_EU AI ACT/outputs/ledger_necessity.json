@@ -1,0 +1,165 @@
+{
+  "module_name": "necessity_justification",
+  "model": "deepseek-v4-pro",
+  "corpus_version": null,
+  "start_time": "2026-08-05T10:44:20.888189",
+  "history": [
+    {
+      "round": 1,
+      "timestamp": "2026-08-05T10:44:38.421286",
+      "inputs": {
+        "risk_ids": [
+          "R001",
+          "R002",
+          "R003",
+          "R004",
+          "R005",
+          "R006"
+        ]
+      },
+      "outputs": {
+        "project_name": "AI面包",
+        "justifications": [
+          {
+            "risk_id": "R001",
+            "is_necessary": true,
+            "reasoning": "处理视频数据是提供核心面部识别和语音分析服务所必需，否则系统无法实现主要功能。",
+            "alternatives_considered": [
+              "使用无生物特征的非敏感数据替代",
+              "仅处理脱敏后的特征向量"
+            ],
+            "proportionality": "虽涉及敏感数据，但限于最小必要范围，且计划实施假名化及单独同意机制，符合目的限制与数据最小化原则。"
+          },
+          {
+            "risk_id": "R002",
+            "is_necessary": true,
+            "reasoning": "业务运营需要将分析结果传输至境外母公司进行集中处理，无本地替代方案可维持同等服务质量。",
+            "alternatives_considered": [
+              "在欧盟境内建设本地化数据中心",
+              "采用联邦学习避免原始数据出境"
+            ],
+            "proportionality": "传输频率与量级按需最小化，并将在传输前实施标准合同条款及补充措施，确保保护水平等效。"
+          },
+          {
+            "risk_id": "R003",
+            "is_necessary": false,
+            "reasoning": "自动化决策并非实现服务目的的唯一方式，可引入人工审核机制以降低风险，且完全自动化不透明性侵害用户权益。",
+            "alternatives_considered": [
+              "引入人工复核节点",
+              "提供可解释的决策提示并允许用户申诉"
+            ],
+            "proportionality": "完全自动化决策对用户有重大影响时，缺乏透明度和干预渠道，不符合比例原则，故非必要。"
+          },
+          {
+            "risk_id": "R004",
+            "is_necessary": true,
+            "reasoning": "保障用户拒绝自动化决策的权利是法律强制要求，设计退出机制是实现合规的必要措施。",
+            "alternatives_considered": [
+              "仅提供人工客服通道",
+              "内置一键关闭自动化决策功能"
+            ],
+            "proportionality": "退出机制的实现成本低，对系统改动小，且能显著提升用户权利保障，符合相称性要求。"
+          },
+          {
+            "risk_id": "R005",
+            "is_necessary": true,
+            "reasoning": "因处理敏感数据且自动化决策产生法律效果，DPIA是强制性合规义务，未执行将导致严重法律风险。",
+            "alternatives_considered": [
+              "实施简化版风险评估",
+              "采用其他认证机制替代DPIA"
+            ],
+            "proportionality": "DPIA的深入程度与高风险处理相匹配，其投入与风险级别成比例，是唯一可充分识别并缓解风险的手段。"
+          },
+          {
+            "risk_id": "R006",
+            "is_necessary": true,
+            "reasoning": "持续监控和审计日志是满足问责要求的基础，缺乏该机制将无法证明合规，导致问责缺失。",
+            "alternatives_considered": [
+              "定期人工抽查代替实时监控",
+              "仅记录关键操作日志"
+            ],
+            "proportionality": "自动化日志与监控措施成本可控，且对系统性能影响小，是实现持续合规的相称手段。"
+          }
+        ]
+      },
+      "observation": {},
+      "decision": {}
+    }
+  ],
+  "best_result": {
+    "project_name": "AI面包",
+    "justifications": [
+      {
+        "risk_id": "R001",
+        "is_necessary": true,
+        "reasoning": "处理视频数据是提供核心面部识别和语音分析服务所必需，否则系统无法实现主要功能。",
+        "alternatives_considered": [
+          "使用无生物特征的非敏感数据替代",
+          "仅处理脱敏后的特征向量"
+        ],
+        "proportionality": "虽涉及敏感数据，但限于最小必要范围，且计划实施假名化及单独同意机制，符合目的限制与数据最小化原则。"
+      },
+      {
+        "risk_id": "R002",
+        "is_necessary": true,
+        "reasoning": "业务运营需要将分析结果传输至境外母公司进行集中处理，无本地替代方案可维持同等服务质量。",
+        "alternatives_considered": [
+          "在欧盟境内建设本地化数据中心",
+          "采用联邦学习避免原始数据出境"
+        ],
+        "proportionality": "传输频率与量级按需最小化，并将在传输前实施标准合同条款及补充措施，确保保护水平等效。"
+      },
+      {
+        "risk_id": "R003",
+        "is_necessary": false,
+        "reasoning": "自动化决策并非实现服务目的的唯一方式，可引入人工审核机制以降低风险，且完全自动化不透明性侵害用户权益。",
+        "alternatives_considered": [
+          "引入人工复核节点",
+          "提供可解释的决策提示并允许用户申诉"
+        ],
+        "proportionality": "完全自动化决策对用户有重大影响时，缺乏透明度和干预渠道，不符合比例原则，故非必要。"
+      },
+      {
+        "risk_id": "R004",
+        "is_necessary": true,
+        "reasoning": "保障用户拒绝自动化决策的权利是法律强制要求，设计退出机制是实现合规的必要措施。",
+        "alternatives_considered": [
+          "仅提供人工客服通道",
+          "内置一键关闭自动化决策功能"
+        ],
+        "proportionality": "退出机制的实现成本低，对系统改动小，且能显著提升用户权利保障，符合相称性要求。"
+      },
+      {
+        "risk_id": "R005",
+        "is_necessary": true,
+        "reasoning": "因处理敏感数据且自动化决策产生法律效果，DPIA是强制性合规义务，未执行将导致严重法律风险。",
+        "alternatives_considered": [
+          "实施简化版风险评估",
+          "采用其他认证机制替代DPIA"
+        ],
+        "proportionality": "DPIA的深入程度与高风险处理相匹配，其投入与风险级别成比例，是唯一可充分识别并缓解风险的手段。"
+      },
+      {
+        "risk_id": "R006",
+        "is_necessary": true,
+        "reasoning": "持续监控和审计日志是满足问责要求的基础，缺乏该机制将无法证明合规，导致问责缺失。",
+        "alternatives_considered": [
+          "定期人工抽查代替实时监控",
+          "仅记录关键操作日志"
+        ],
+        "proportionality": "自动化日志与监控措施成本可控，且对系统性能影响小，是实现持续合规的相称手段。"
+      }
+    ]
+  },
+  "audit_record": {
+    "module_name": "necessity_justification",
+    "model": "deepseek-v4-pro",
+    "corpus_version": null,
+    "start_time": "2026-08-05T10:44:20.888189",
+    "end_time": "2026-08-05T10:44:38.445882",
+    "total_rounds": 1,
+    "round_timestamps": [
+      "2026-08-05T10:44:38.421286"
+    ]
+  }
+}

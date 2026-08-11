@@ -1,0 +1,216 @@
+{
+  "project_name": "AI面包",
+  "generated_at": "2026-08-05 10:44:19",
+  "action_plan": [
+    {
+      "risk_id": "R001",
+      "risk_description": "处理视频数据极可能包含人脸、声纹等生物特征，属于Art.9特殊类别数据，但未明确任何有效的同意或法定例外情形，合法性基础缺失。",
+      "actions": [
+        {
+          "action": "立即暂停所有涉及生物特征数据的处理活动，直到获得有效合法性基础",
+          "priority": "P0",
+          "owner": "技术部 + 法务部",
+          "timeline": "1周",
+          "acceptance_criteria": "已发出正式暂停指令，相关数据流停止收集和处理，并由CTO和DPO确认"
+        },
+        {
+          "action": "委托外部数据保护顾问进行合法性基础评估，确认是否可依据Art.9(2)(a)获得明确同意或其他例外",
+          "priority": "P0",
+          "owner": "法务部 + 外部顾问",
+          "timeline": "3周",
+          "acceptance_criteria": "出具法律意见书，明确指出可行的合法性基础（如明确同意、已明显公开等）及无法获得的后果"
+        },
+        {
+          "action": "设计并部署针对敏感数据的单独、明确同意交互界面，确保在收集视频前弹出并禁止默认勾选",
+          "priority": "P0（如选择同意路径）",
+          "owner": "产品部 + 技术部",
+          "timeline": "4周",
+          "acceptance_criteria": "通过UAT测试，同意记录留存并可被随时撤回，DPO审核批准上线"
+        },
+        {
+          "action": "更新数据保护政策与隐私声明，明确说明生物特征数据处理的类别、目的、保留期限及权利",
+          "priority": "P0",
+          "owner": "法务部",
+          "timeline": "2周",
+          "acceptance_criteria": "新隐私声明发布并取得用户重新确认（如需），与同意管理器联动"
+        },
+        {
+          "action": "为无法获得有效合法性基础的情形制定数据最小化方案，如实施面部模糊、声纹剥离等匿名化前置措施",
+          "priority": "P1",
+          "owner": "技术部 + 法务部",
+          "timeline": "6周",
+          "acceptance_criteria": "技术方案通过PoC验证，证明后端接收的视频已去除Art.9特殊类别数据"
+        }
+      ]
+    },
+    {
+      "risk_id": "R002",
+      "risk_description": "个人数据传出欧盟且目的地无充分性认定，也未采用SCC、BCR等适当保障措施，存在Ch.V合规缺口。",
+      "actions": [
+        {
+          "action": "全面盘点并记录所有出境数据流，明确数据接收方、传输目的及数据类别",
+          "priority": "P0",
+          "owner": "技术部 + 法务部",
+          "timeline": "2周",
+          "acceptance_criteria": "形成《数据出境映射报告》，经DPO审核确认无遗漏"
+        },
+        {
+          "action": "基于数据出境映射，对每一传输采用最新欧盟标准合同条款（SCCs）并签署协议",
+          "priority": "P0",
+          "owner": "法务部",
+          "timeline": "4周",
+          "acceptance_criteria": "所有出境数据流的SCCs签署完毕，完成内部归档并可随时应监管要求出示"
+        },
+        {
+          "action": "对仅依赖Art.49例外（如用户明确同意）的传输实施严格的场景限定与记录机制",
+          "priority": "P1",
+          "owner": "法务部 + 产品部",
+          "timeline": "4周",
+          "acceptance_criteria": "Art.49传输每次均获得单独同意并记录，不用于重复传输场景"
+        },
+        {
+          "action": "执行传输影响评估（TIA），评估接收国法律环境及额外保护措施的必要性",
+          "priority": "P1",
+          "owner": "法务部 + 外部顾问",
+          "timeline": "6周",
+          "acceptance_criteria": "完成TIA报告，必要时补足加密、假名化等补充措施，由DPO签署"
+        }
+      ]
+    },
+    {
+      "risk_id": "R003",
+      "risk_description": "系统在无人工介入的情况下做出对用户有实质影响的自动化决策，但决策逻辑不透明，缺乏可解释性，且未提供拒绝该决策的明确机制。",
+      "actions": [
+        {
+          "action": "设计并上线自动化决策解释功能，以通俗语言向用户展示输入数据、决策逻辑及结果影响",
+          "priority": "P0",
+          "owner": "产品部 + 算法团队",
+          "timeline": "6周",
+          "acceptance_criteria": "在用户端可点击查看决策理由，解释准确率>90%（经技术测试），无重大偏差"
+        },
+        {
+          "action": "在产品中嵌入“请求人工审核”或“提出异议”的交互入口，并承诺48小时内提供人工干预结果",
+          "priority": "P0",
+          "owner": "产品部 + 技术部",
+          "timeline": "4周",
+          "acceptance_criteria": "前端入口完成并接通客服/审核工单系统，自动化测试通过"
+        },
+        {
+          "action": "重新设计算法训练与上线审批流程，确保每个自动化决策模型经过透明性、公平性评估并留有记录",
+          "priority": "P1",
+          "owner": "技术部 + 法务部",
+          "timeline": "3个月",
+          "acceptance_criteria": "模型卡片或合规检查清单已集成到MLOps流水线中，新模型上线前必须通过"
+        },
+        {
+          "action": "更新隐私声明，增加自动化决策的专项说明，涵盖决策逻辑、潜在后果及用户权利",
+          "priority": "P0",
+          "owner": "法务部",
+          "timeline": "2周",
+          "acceptance_criteria": "更新后的隐私声明上线，并在用户首次使用时主动弹窗提醒"
+        }
+      ]
+    },
+    {
+      "risk_id": "R004",
+      "risk_description": "因适用Art.22，用户应有权拒绝自动化决策，但现有描述中未提供任何退出或人工干预渠道。",
+      "actions": [
+        {
+          "action": "在用户设置中增加“拒绝自动化决策”选项，用户选择后该账户将切换为人工处理模式",
+          "priority": "P0",
+          "owner": "产品部 + 技术部",
+          "timeline": "4周",
+          "acceptance_criteria": "选项在产品内上线，点击后系统停止对该用户进行自动化评分，人工工单生成并分配"
+        },
+        {
+          "action": "建立人工干预SOP，明确响应时效、替代决策流程和记录要求",
+          "priority": "P1",
+          "owner": "运营部 + 法务部",
+          "timeline": "3周",
+          "acceptance_criteria": "SOP文档完整，相关客服人员完成培训，模拟场景测试通过"
+        },
+        {
+          "action": "在隐私声明和应用程序内显著位置告知用户享有拒绝自动化决策的权利及行使方式",
+          "priority": "P0",
+          "owner": "法务部 + 产品部",
+          "timeline": "2周",
+          "acceptance_criteria": "告知内容在启动画面和隐私主页展示，且与拒绝入口直接链接"
+        }
+      ]
+    },
+    {
+      "risk_id": "R005",
+      "risk_description": "处理活动命中多项DPIA门槛因素（自动化决策产生法律效果、处理敏感数据），但未见已执行或计划执行的数据保护影响评估，违反GDPR第35条。",
+      "actions": [
+        {
+          "action": "立即委托DPO或外部顾问启动针对AI面包处理活动的全面DPIA",
+          "priority": "P0",
+          "owner": "法务部 + 外部顾问",
+          "timeline": "4周",
+          "acceptance_criteria": "DPIA报告定稿，识别出所有高风险项并包含缓解措施，DPO签署确认"
+        },
+        {
+          "action": "在DPIA中重点评估自动化决策和特殊类别数据处理的必要性、相称性及安全保障",
+          "priority": "P0",
+          "owner": "法务部 + 算法团队",
+          "timeline": "已包含在DPIA周期内",
+          "acceptance_criteria": "DPIA中包含专门章节评估上述处理活动的风险矩阵及减控方案"
+        },
+        {
+          "action": "在DPIA完成后，将结论中的必要缓解措施转化为项目路线图并分配至各部门执行",
+          "priority": "P1",
+          "owner": "项目管理办公室 + 法务部",
+          "timeline": "2周（DPIA完成后）",
+          "acceptance_criteria": "路线图在JIRA等工具中明确owner、截止日期，且与DPIA风险项一一对应"
+        },
+        {
+          "action": "如DPIA表明存在高风险且难以缓解，向数据保护监管机构进行事先咨询",
+          "priority": "P1",
+          "owner": "法务部",
+          "timeline": "视DPIA结论启动",
+          "acceptance_criteria": "已向主管监管机构提交书面咨询请求并记录回复"
+        }
+      ]
+    },
+    {
+      "risk_id": "R006",
+      "risk_description": "缺乏持续监控和审计日志，无法证明对自动化决策系统的有效治理及合规控制。",
+      "actions": [
+        {
+          "action": "构建统一的日志收集与分析平台，记录所有自动化决策的输入、输出、时间戳和模型版本",
+          "priority": "P1",
+          "owner": "技术部",
+          "timeline": "2个月",
+          "acceptance_criteria": "日志平台上线，至少保留决策事件日志1年，支持合规查询与报告导出"
+        },
+        {
+          "action": "建立自动化决策的异常检测与告警机制，对决策分布突变或歧视性结果自动报警",
+          "priority": "P1",
+          "owner": "算法团队 + 安全部",
+          "timeline": "3个月",
+          "acceptance_criteria": "告警规则配置完成，经模拟数据测试可成功触发并通知相关人员"
+        },
+        {
+          "action": "每季度执行一次内部合规审计，重点审核自动化决策的公平性、透明性和用户权利响应",
+          "priority": "P2",
+          "owner": "法务部 + 内部审计",
+          "timeline": "首次审计3个月，后续持续",
+          "acceptance_criteria": "出具审计报告并提交管理层，审计发现的问题有明确整改计划"
+        },
+        {
+          "action": "实施模型版本管理和变更审批流程，确保任何算法改进都经过合规审查和影响评估",
+          "priority": "P1",
+          "owner": "技术部 + 法务部",
+          "timeline": "6周",
+          "acceptance_criteria": "模型更新在CI/CD流水线中增加合规门禁，无DPO/法务批准不可上线"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total_risks": 6,
+    "p0_actions": 14,
+    "p1_actions": 11,
+    "p2_actions": 1
+  }
+}

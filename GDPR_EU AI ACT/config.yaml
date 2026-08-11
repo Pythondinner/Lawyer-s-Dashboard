@@ -1,0 +1,27 @@
+# config.yaml
+# 法律合规Agent - 精简版路由配置
+
+llm:
+  provider: "deepseek"
+  model: "deepseek-v4-pro"
+  temperature: 0.3
+  max_tokens: 6000
+
+tools:
+  - id: "gdpr_dpia"
+    name: "GDPR 数据保护影响评估"
+    description: "专注于欧盟通用数据保护条例（GDPR）的数据保护影响评估。当用户提到GDPR、DPIA、数据保护、隐私合规、欧洲数据合规、出海欧洲时，应路由至此工具。"
+    entry: "modules.risk_identification.run_risk_harness"
+
+  - id: "eu_ai_act"
+    name: "EU AI Act 义务全覆盖分析"
+    description: "专注于欧盟人工智能法案（EU AI Act）对高风险AI系统的合规要求。当用户提到EU AI Act、欧盟AI法案、AI合规体系、高风险AI时，应路由至此工具。"
+    entry: "modules.main.run_eu_pipeline"
+
+harness:
+  max_rounds: 3
+  target_coverage: 4
+
+output:
+  dir: "./outputs"
+  format: "json"

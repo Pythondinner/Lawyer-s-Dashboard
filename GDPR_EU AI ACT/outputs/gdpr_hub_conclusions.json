@@ -1,0 +1,29 @@
+{
+  "dpia_threshold": {
+    "dpia_required": false,
+    "hit_factors": [
+      "敏感数据（Art.9/犯罪定罪数据）"
+    ],
+    "hit_count": 1,
+    "basis": "命中1/9项WP248因素：敏感数据（Art.9/犯罪定罪数据）（<2项，非强制，但可自愿评估）"
+  },
+  "automated_decision": {
+    "applies": false,
+    "conclusion": "Art.22 不适用",
+    "basis": "三要件未同时满足（决定存在=False，人工介入=实质性，影响重大性=无实质影响）"
+  },
+  "lawful_basis": {
+    "basis_found": false,
+    "basis": null,
+    "type": "需权衡",
+    "next": "落入Art.6(1)(f)正当利益，需三步平衡测试，权衡型，结论需标注「专业判断，建议律师复核」"
+  },
+  "transfer_mechanism": {
+    "status": "缺口",
+    "basis": "数据传出欧盟，目的地无充分性认定，也未采用SCC/BCR等适当保障措施，存在Ch.V合规缺口（需核实是否符合Art.49特定情形例外，否则应尽快签署SCC）"
+  },
+  "processor_relationship": {
+    "status": "不适用",
+    "basis": "未使用第三方AI/云服务处理个人数据"
+  }
+}
