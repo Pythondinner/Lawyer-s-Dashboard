@@ -4,8 +4,8 @@
 
 ## 三个项目
 
-| | 解决什么 | 验证到什么程度 |
+| | 解决什么 | 进展 |
 |---|---|---|
-| Criminal-Defense-Case-File-Review-Agent | 刑事案卷 PDF(上千页)→ 结构化证据核查报告,只核事实不下法律定性 | 3 个真实案子,最大 2137 页 / 19 卷压力测试,引用准确率从 39% 定位根因后修到 72.2% |
-| GDPR_EU AI ACT Agent| 一段业务场景描述 → GDPR × AI Act 合规分析,法务/工程双视图 | DeepSeek API 真实多轮实测,含一次自己测出来的跨模块事实不一致 bug,定位根因后修复重验 |
-| deep_research Agent| 开放式问题 → 带引用的研究报告,来源冲突就如实标冲突 | 真实 Tavily + DeepSeek 端到端跑通,规模刻意控制得小,目的是把 Agent 核心机制过一遍 |
+| Criminal-Defense-Case-File-Review-Agent | 刑事案卷 PDF(上千页)→ 结构化证据核查报告,只核事实不下法律定性 | 可以直接用,3 个真实案子,最大 2137 页 / 19 卷压力测试,引用准确率从 39% 定位根因后修到 72.2% |
+| GDPR_EU AI ACT Agent| 一段业务场景描述 → GDPR × AI Act 合规分析,法务/工程双视图 | 还需迭代 |
+| deep_research Agent| 开放式问题 → 带引用的研究报告,来源冲突就如实标冲突 | 可用，但需专业化方向改造 |
