@@ -7,5 +7,5 @@
 | | 解决什么 | 进展 |
 |---|---|---|
 | Criminal-Defense-Case-File-Review-Agent | 刑事案卷 PDF(上千页)→ 结构化证据核查报告,只核事实不下法律定性 | 可以直接用,3 个真实案子,最大 2137 页 / 19 卷压力测试,引用准确率从 39% 定位根因后修到 72.2% |
-| GDPR_EU AI ACT Agent| 一段业务场景描述 → GDPR × AI Act 合规分析,法务/工程双视图 | 还需迭代 |
+| GDPR_EU AI ACT Agent| 一段业务场景描述 → GDPR × AI Act 合规分析,法务/工程双视图 | 可用，但还需迭代 |
 | deep_research Agent| 开放式问题 → 带引用的研究报告,来源冲突就如实标冲突 | 可用，但需专业化方向改造 |
