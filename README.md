@@ -1,2 +1,11 @@
-# Criminal-Defense-Case-File-Review-Agent_v0
-read README
+# 律师工作台
+
+目标是把律师从繁重的卷宗中解放出来专注法律和事实的判断。当前只有3个Agent尚未整合到一起，后续的开发方向除了各模块的1-100建设，还有民商事律师工作台的0-1开发以及其他的非诉讼业务工作台开发。
+
+## 三个项目
+
+| | 解决什么 | 验证到什么程度 |
+|---|---|---|
+| [刑事阅卷 Agent](刑事阅卷Agent_Git/README.md) | 刑事案卷 PDF(上千页)→ 结构化证据核查报告,只核事实不下法律定性 | 3 个真实案子,最大 2137 页 / 19 卷压力测试,引用准确率从 39% 定位根因后修到 72.2% |
+| [法律合规 Agent](GDPR_Git/README.md) | 一段业务场景描述 → GDPR × AI Act 合规分析,法务/工程双视图 | DeepSeek API 真实多轮实测,含一次自己测出来的跨模块事实不一致 bug,定位根因后修复重验 |
+| [Deep Research Agent](deep_search_Git/README.md) | 开放式问题 → 带引用的研究报告,来源冲突就如实标冲突 | 真实 Tavily + DeepSeek 端到端跑通,规模刻意控制得小,目的是把 Agent 核心机制过一遍 |
