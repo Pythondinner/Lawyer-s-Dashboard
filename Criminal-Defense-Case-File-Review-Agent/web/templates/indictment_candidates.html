@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>确认起诉书/起诉意见书 - {{ case_name }}</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Microsoft YaHei", sans-serif; padding: 30px 40px; max-width: 800px; }
+  h1 { font-size: 20px; margin-bottom: 4px; }
+  #back { font-size: 13px; margin-bottom: 10px; }
+  #back a { color: #666; text-decoration: none; }
+  #back a:hover { text-decoration: underline; }
+  #note { font-size: 13px; color: #666; margin-bottom: 20px; }
+
+  .candidate-card {
+    border: 1px solid #ddd; border-radius: 8px; padding: 16px 18px; margin-bottom: 16px;
+  }
+  .candidate-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .type-badge {
+    font-size: 12px; padding: 3px 10px; border-radius: 10px; background: #e3ecfd; color: #2255AA; font-weight: bold;
+  }
+  .candidate-source { font-size: 12px; color: #888; }
+  .preview {
+    font-size: 13px; color: #444; background: #fafafa; border-radius: 4px; padding: 10px;
+    white-space: pre-wrap; word-wrap: break-word; margin-bottom: 12px; max-height: 100px; overflow-y: auto;
+  }
+  .page-range { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 13px; }
+  .page-range input {
+    width: 70px; padding: 5px; font-size: 13px; border: 1px solid #ccc; border-radius: 4px; text-align: center;
+  }
+  .candidate-buttons button {
+    font-size: 13px; padding: 6px 16px; margin-right: 8px; cursor: pointer; border-radius: 4px; border: 1px solid #ccc;
+  }
+  .btn-confirm { background: #2255AA; color: #fff; border-color: #2255AA !important; }
+  .btn-dismiss { background: #fff; color: #666; }
+  .candidate-result { font-size: 13px; color: #2255AA; margin-top: 8px; }
+  #empty-state { color: #999; padding: 40px; text-align: center; }
+</style>
+</head>
+<body>
+
+<div id="back"><a href="/case/{{ case_name }}">&larr; 返回深挖对话</a></div>
+<h1>确认起诉书/起诉意见书</h1>
+<div id="note">系统按标题特征找出的候选,不是最终认定——页码范围如果不对,直接改这里的数字再确认;确认之后才会真正生成对照表。跟这份案子无关的候选,点"不是,忽略"就行。</div>
+
+<div id="candidates"></div>
+<div id="empty-state" style="display:none;">没有待确认的候选。</div>
+
+<script>
+const CASE_NAME = {{ case_name|tojson }};
+const API_BASE = '/case/' + encodeURIComponent(CASE_NAME);
+const container = document.getElementById('candidates');
+const emptyState = document.getElementById('empty-state');
+
+let cardCounter = 0;
+
+function renderCandidate(c) {
+  const id = 'candidate-' + (cardCounter++);
+  const card = document.createElement('div');
+  card.className = 'candidate-card';
+  card.id = id;
+  card.dataset.candidate = JSON.stringify(c);
+  card.innerHTML = `
+    <div class="candidate-header">
+      <span class="type-badge">疑似${c.type}</span>
+      <span class="candidate-source">${c.volume_label}</span>
+    </div>
+    <div class="preview">${c.preview.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+    <div class="page-range">
+      起始页 <input type="number" id="start-${id}" value="${c.start_page}" min="1">
+      结束页 <input type="number" id="end-${id}" value="${c.end_page}" min="1">
+    </div>
+    <div class="candidate-buttons">
+      <button class="btn-confirm" onclick="confirmCandidate('${id}')">确认,生成对照表</button>
+      <button class="btn-dismiss" onclick="dismissCandidate('${id}')">不是,忽略</button>
+    </div>
+  `;
+  container.appendChild(card);
+}
+
+async function loadCandidates() {
+  const resp = await fetch(API_BASE + '/api/case');
+  const data = await resp.json();
+  const candidates = data.indictment_candidates || [];
+  if (!candidates.length) {
+    emptyState.style.display = 'block';
+    return;
+  }
+  candidates.forEach(renderCandidate);
+}
+
+function finishCard(card, message) {
+  card.querySelector('.candidate-buttons').remove();
+  const result = document.createElement('div');
+  result.className = 'candidate-result';
+  result.textContent = message;
+  card.appendChild(result);
+}
+
+async function confirmCandidate(id) {
+  const card = document.getElementById(id);
+  const c = JSON.parse(card.dataset.candidate);
+  const startPage = parseInt(document.getElementById('start-' + id).value, 10);
+  const endPage = parseInt(document.getElementById('end-' + id).value, 10);
+
+  const resp = await fetch(API_BASE + '/api/indictment-candidates/confirm', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      type: c.type, ledger_path: c.ledger_path, start_page: startPage, end_page: endPage,
+      // 候选原始范围(c.start_page/c.end_page)单独传,不管上面这两个输入框有没有被改过,
+      // 系统都能在候选列表里精确定位到这一条并摘掉——见后端 confirm_indictment 的说明。
+      candidate_start_page: c.start_page, candidate_end_page: c.end_page
+    })
+  });
+  const data = await resp.json();
+  if (data.ok) {
+    finishCard(card, `已确认,生成了 ${data.entry.group_count} 组对照 —— `);
+    const link = document.createElement('a');
+    link.href = API_BASE + '/indictment/' + encodeURIComponent(c.type);
+    link.textContent = '查看对照表';
+    card.querySelector('.candidate-result').appendChild(link);
+  } else {
+    alert('确认失败: ' + (data.error || '未知错误'));
+  }
+}
+
+async function dismissCandidate(id) {
+  const card = document.getElementById(id);
+  const c = JSON.parse(card.dataset.candidate);
+
+  const resp = await fetch(API_BASE + '/api/indictment-candidates/dismiss', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ledger_path: c.ledger_path, start_page: c.start_page, end_page: c.end_page})
+  });
+  const data = await resp.json();
+  if (data.ok) {
+    finishCard(card, '已忽略');
+  } else {
+    alert('操作失败: ' + (data.error || '未知错误'));
+  }
+}
+
+loadCandidates();
+</script>
+
+</body>
+</html>

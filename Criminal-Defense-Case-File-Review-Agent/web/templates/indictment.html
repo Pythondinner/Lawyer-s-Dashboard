@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>{{ doc_type }}事实核对</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Microsoft YaHei", sans-serif; padding: 20px 30px; }
+
+  #top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  #top-bar a { color: #2255AA; text-decoration: none; font-size: 14px; }
+  #top-bar a:hover { text-decoration: underline; }
+
+  h1 { font-size: 20px; margin-bottom: 4px; }
+  #note-line { font-size: 13px; color: #666; margin-bottom: 20px; }
+
+  table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  th, td { border: 1px solid #ccc; padding: 10px; vertical-align: top; text-align: left; font-size: 13px; line-height: 1.6; }
+  th { background: #333; color: #fff; font-size: 13px; }
+  col.col-indictment { width: 38%; }
+  col.col-evidence { width: 42%; }
+  col.col-note { width: 20%; }
+
+  .indictment-line { color: #AA3322; }
+  .evidence-line { color: #2255AA; }
+  .citation { font-weight: bold; }
+  .line { margin: 0 0 6px 0; white-space: pre-wrap; word-wrap: break-word; }
+
+  .note-cell { background: #fafafa; }
+  .note-display {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 13px;
+    color: #333;
+    margin-bottom: 8px;
+    min-height: 1em;
+  }
+  .note-empty { color: #999; font-style: italic; }
+  .note-toggle {
+    display: inline-block;
+    font-size: 12px;
+    color: #2255AA;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  .note-editor { display: none; margin-top: 8px; }
+  .note-editor.open { display: block; }
+  .note-editor textarea {
+    width: 100%;
+    min-height: 70px;
+    font-size: 13px;
+    font-family: inherit;
+    padding: 6px;
+    box-sizing: border-box;
+    resize: vertical;
+  }
+  .note-editor button {
+    margin-top: 6px;
+    font-size: 12px;
+    padding: 4px 12px;
+    cursor: pointer;
+  }
+  .note-timestamp { font-size: 11px; color: #999; margin-top: 4px; }
+
+  #empty-state { color: #999; padding: 40px; text-align: center; }
+</style>
+</head>
+<body>
+
+<div id="top-bar">
+  <h1 id="case-title">{{ doc_type }}事实核对</h1>
+  <a href="/case/{{ case_name }}">&larr; 返回深挖对话</a>
+</div>
+<div id="note-line">本表只做并列对照,不判断{{ doc_type }}与卷宗证据是否一致,不下任何结论——判断权在律师。右侧"备注"栏是律师自己写的,不是系统生成的内容,不会被覆盖或修改。</div>
+
+<div id="table-container"></div>
+<div id="empty-state" style="display:none;">这个案子没有起诉书核对数据。</div>
+
+<script>
+const CASE_NAME = {{ case_name|tojson }};
+const DOC_TYPE = {{ doc_type|tojson }};
+const API_BASE = '/case/' + encodeURIComponent(CASE_NAME) + '/api/indictment/' + encodeURIComponent(DOC_TYPE);
+const container = document.getElementById('table-container');
+const emptyState = document.getElementById('empty-state');
+const caseTitle = document.getElementById('case-title');
+
+function citationHtml(line) {
+  const escaped = line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return escaped.replace(/(【[^】]+】)/g, '<span class="citation">$1</span>');
+}
+
+function renderNoteCell(group) {
+  const hasNote = group.annotation && group.annotation.note;
+  const noteText = hasNote ? group.annotation.note : '';
+  const displayHtml = hasNote
+    ? `<div class="note-display">${noteText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div><div class="note-timestamp">${group.annotation.timestamp || ''}</div>`
+    : `<div class="note-display note-empty">(暂无备注)</div>`;
+
+  return `
+    <div class="note-body" data-index="${group.index}">
+      ${displayHtml}
+      <span class="note-toggle" onclick="toggleEditor(${group.index})">${hasNote ? '修改备注' : '+ 添加备注'}</span>
+      <div class="note-editor" id="editor-${group.index}">
+        <textarea id="textarea-${group.index}" placeholder="写点什么,比如&quot;这个可以当质证点&quot;&quot;这个要当庭问检察官&quot;...">${noteText}</textarea><br>
+        <button onclick="saveNote(${group.index})">保存</button>
+        <button onclick="toggleEditor(${group.index})">取消</button>
+      </div>
+    </div>
+  `;
+}
+
+function toggleEditor(index) {
+  const el = document.getElementById('editor-' + index);
+  el.classList.toggle('open');
+}
+
+async function saveNote(index) {
+  const textarea = document.getElementById('textarea-' + index);
+  const note = textarea.value;
+  const resp = await fetch(API_BASE + '/annotate', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({group_index: index, note: note})
+  });
+  const data = await resp.json();
+  if (data.ok) {
+    loadData(); // 重新拉取,保证显示的是刚保存的内容,不是本地临时状态
+  } else {
+    alert('保存失败: ' + (data.error || '未知错误'));
+  }
+}
+
+async function loadData() {
+  const resp = await fetch(API_BASE);
+  const data = await resp.json();
+
+  if (!data.available) {
+    container.style.display = 'none';
+    emptyState.style.display = 'block';
+    return;
+  }
+
+  caseTitle.textContent = data.case_name + ' —— ' + DOC_TYPE + '事实核对';
+
+  let html = '<table><colgroup><col class="col-indictment"><col class="col-evidence"><col class="col-note"></colgroup>';
+  html += `<tr><th>${DOC_TYPE}表述</th><th>卷宗证据情况</th><th>律师备注</th></tr>`;
+
+  data.groups.forEach(g => {
+    const indictmentHtml = g.indictment.map(l => `<div class="line indictment-line">${citationHtml(l)}</div>`).join('');
+    const evidenceHtml = (g.evidence.length ? g.evidence : ['(未找到对应证据)']).map(l => `<div class="line evidence-line">${citationHtml(l)}</div>`).join('');
+    html += `<tr><td>${indictmentHtml}</td><td>${evidenceHtml}</td><td class="note-cell">${renderNoteCell(g)}</td></tr>`;
+  });
+
+  html += '</table>';
+  container.innerHTML = html;
+}
+
+loadData();
+</script>
+
+</body>
+</html>

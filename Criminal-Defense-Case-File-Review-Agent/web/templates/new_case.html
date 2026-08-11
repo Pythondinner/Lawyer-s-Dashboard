@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>新建案子 - 刑事阅卷 Agent</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Microsoft YaHei", sans-serif; padding: 30px 40px; max-width: 700px; }
+  h1 { font-size: 20px; margin-bottom: 4px; }
+  #back { font-size: 13px; margin-bottom: 20px; }
+  #back a { color: #666; text-decoration: none; }
+  #back a:hover { text-decoration: underline; }
+
+  label { display: block; font-size: 13px; color: #444; margin-bottom: 4px; margin-top: 18px; }
+  input[type=text], input[type=password] {
+    width: 100%; padding: 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;
+  }
+
+  fieldset { border: 1px solid #ddd; border-radius: 8px; padding: 14px 16px; margin-top: 22px; }
+  legend { font-size: 14px; font-weight: bold; padding: 0 6px; }
+  .hint { font-size: 12px; color: #888; margin-top: 2px; }
+
+  .volume-row { border-bottom: 1px dashed #ddd; padding-bottom: 14px; margin-bottom: 14px; }
+  .volume-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .volume-row .row-fields { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+  .volume-row .field { flex: 1; min-width: 140px; }
+  .volume-row .field-file { flex: 2; min-width: 200px; }
+  .remove-row { font-size: 12px; color: #a02020; cursor: pointer; background: none; border: none; padding: 6px; }
+
+  #add-volume { margin-top: 8px; font-size: 13px; padding: 6px 14px; cursor: pointer; }
+
+  #submit-btn {
+    margin-top: 26px; padding: 10px 24px; font-size: 14px; cursor: pointer;
+    background: #2255AA; color: #fff; border: none; border-radius: 6px;
+  }
+  #submit-btn:disabled { opacity: 0.5; cursor: default; }
+  #error-box { color: #a02020; font-size: 13px; margin-top: 12px; display: none; }
+</style>
+</head>
+<body>
+
+<div id="back"><a href="/">&larr; 返回案子列表</a></div>
+<h1>新建案子</h1>
+
+<form id="new-case-form">
+  <label for="case_name">案名</label>
+  <input type="text" id="case_name" name="case_name" placeholder="比如:XX非法采矿案" required>
+
+  <fieldset>
+    <legend>卷宗材料</legend>
+    <div class="hint">每份 PDF 对应一个卷标签(比如"卷1"),加密的 PDF 填一下密码,不加密留空。起诉书/起诉意见书不用单独拆出来传——不管是单独一卷、还是混在证据材料里,处理完之后系统会自动找出疑似起诉书/起诉意见书的页码范围,交给你在案子页面上确认。</div>
+    <div id="volume-rows"></div>
+    <button type="button" id="add-volume">＋ 添加一卷</button>
+  </fieldset>
+
+  <button type="submit" id="submit-btn">开始处理</button>
+  <div id="error-box"></div>
+</form>
+
+<script>
+const rowsContainer = document.getElementById('volume-rows');
+let rowCount = 0;
+
+function addVolumeRow() {
+  rowCount++;
+  const row = document.createElement('div');
+  row.className = 'volume-row';
+  row.innerHTML = `
+    <div class="row-fields">
+      <div class="field field-file">
+        <label>PDF 文件</label>
+        <input type="file" name="volume_pdf" accept="application/pdf" required>
+      </div>
+      <div class="field">
+        <label>卷标签</label>
+        <input type="text" name="volume_label" placeholder="卷${rowCount}">
+      </div>
+      <div class="field">
+        <label>密码(如有)</label>
+        <input type="password" name="volume_password">
+      </div>
+      <button type="button" class="remove-row" onclick="this.closest('.volume-row').remove()">删除</button>
+    </div>
+  `;
+  rowsContainer.appendChild(row);
+}
+
+document.getElementById('add-volume').addEventListener('click', addVolumeRow);
+addVolumeRow(); // 默认给一行,不用每次都手动点一次
+
+const form = document.getElementById('new-case-form');
+const submitBtn = document.getElementById('submit-btn');
+const errorBox = document.getElementById('error-box');
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  errorBox.style.display = 'none';
+  submitBtn.disabled = true;
+  submitBtn.textContent = '提交中...';
+
+  const formData = new FormData(form);
+  try {
+    const resp = await fetch('/api/new-case', { method: 'POST', body: formData });
+    if (resp.redirected) {
+      window.location.href = resp.url;
+      return;
+    }
+    const data = await resp.json();
+    errorBox.textContent = data.error || '提交失败,未知错误';
+    errorBox.style.display = 'block';
+  } catch (err) {
+    errorBox.textContent = '网络错误: ' + err;
+    errorBox.style.display = 'block';
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = '开始处理';
+  }
+});
+</script>
+
+</body>
+</html>
